@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import { initProvider } from '@metamask/inpage-provider'
 import Web3 from 'web3'
-import * as LocalMessageDuplexStream from 'post-message-stream'
-import { Button } from 'antd'
+// To replace window.ethereum:
+// import { initProvider } from '@metamask/inpage-provider'
+// import * as LocalMessageDuplexStream from 'post-message-stream'
 import MetamaskOnboarding from '@metamask/onboarding'
 import './index.css'
+import { Input } from 'antd'
 
 const { ethereum } = window
 const web3 = new Web3(ethereum)
+
+const logger = (css) => ((...args) => {
+  args[0] = `%c ${args[0]} `
+  args.splice(1, 0, css)
+  console.log.apply(this, args)
+})
 
 const namehash = (name) => {
   let node = '0x0000000000000000000000000000000000000000000000000000000000000000'
@@ -29,9 +36,9 @@ const NET = {
     ens: '0x314159265dd8dbb310642f98f50c066173c1259b',
     resolve: '0xe7410170f87102df0055eb195163a03b7f2bff4a',
   },
-//  Rinkeby: {
-//    ens: '0xe7410170f87102df0055eb195163a03b7f2bff4a'
-//  },
+  Rinkeby: {
+    ens: '0xe7410170f87102df0055eb195163a03b7f2bff4a'
+  },
 }
 
 const ensAbi = [
@@ -91,50 +98,46 @@ export default () => {
   //   name: 'inpage', target: 'contentscript',
   // })
   // const ethereum = initProvider({ connectionStream: metamaskStream })
-  //const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
   const onboarding = new MetamaskOnboarding()
   const [name, setName] = useState('dhappy') //useState("Are there /'s Allowed? 🐳")
-  const [tld, setTLD] = useState('eth') // test
-  const [addrs, setAddrs] = useState({
-    self: { title: 'Your Address' },
-    net: { title: 'Current Network' },
-    rev: { title: 'Reverse Address' },
-    ens: { title: 'ENS Address' },
-    reg: { title: 'Registrar Address' },
-    revReg: { title: 'Reverse Registrar Address' },
-    owner: { title: `${name}.${tld} Owner` },
-    resolve: { title: 'Resolver Address' },
-    revLook: { title: 'Reverse Lookup' },
+  const [tld, setTLD] = useState('test') // eth
+  const [titles, setTitles] = useState({
+    self: 'Your Address',
+    net: 'Current Network',
+    rev: 'Reverse Address',
+    ens: 'ENS Address',
+    reg: 'Registrar Address',
+    revReg: 'Reverse Registrar Address',
+    owner: `${name}.${tld} Owner`,
+    revOwn: `Reverse Lookup Owner`,
+    resolve: 'Resolver Address',
+    revLook: 'Reverse Lookup',
   })
+  const [addrs, setAddrs] = useState({})
   const [tracts, setTracts] = useState({})
-  const [pos, setPos] = useState(0)
 
   const updateAddr = (key, val) => {
-    setAddrs(s => ({ ...s, [key]: { title: (s[key] || {}).title, val: val }}))
+    setAddrs(as => ({ ...as, [key]: val }))
   }
 
-  useEffect(() => {
-    if(addrs.net.val) {
-      Object.entries(NET[addrs.net.val]).forEach(([key, val]) => updateAddr(key, val))
-    }
-  }, [addrs.net.val])
-
-  const netSet = () => (
-    updateAddr(
-      'net',
-      (() => {
-        switch(parseInt(ethereum.networkVersion)) {
-          case 1: return 'mainnet'
-          case 2: return 'Morden'
-          case 3: return 'Ropsten'
-          case 4: return 'Rinkeby'
-          case 42: return 'Kovan'
-          default: return `unknown (id:${ethereum.networkVersion})`
-        }
-      })()
-    )
-  )
-  ethereum.on('networkChanged', netSet)
+  const netSet = () => {
+    const net = (() => {
+      switch(parseInt(ethereum.networkVersion)) {
+        case 1: return 'mainnet'
+        case 2: return 'Morden'
+        case 3: return 'Ropsten'
+        case 4: return 'Rinkeby'
+        case 42: return 'Kovan'
+        default: return `unknown (id:${ethereum.networkVersion})`
+      }
+    })()
+    updateAddr('net', net)
+    console.log(Object.assign({}, NET[net]))
+    setAddrs(as => Object.assign({}, as, NET[net]))
+  }
+  ethereum.on('networkChanged', () => {
+    setAddrs({}); setTracts({})
+  })
   ethereum.on('accountsChanged', (accts) => updateAddr('self', accts[0]))
 
   const handlers = [
@@ -151,101 +154,130 @@ export default () => {
     {
       name: 'Enable Ethereum on this Site',
       func: async () => {
-        console.info('%cEnabling Inpage Provider', 'color: purple')
+        const log = logger('color: purple')
+        log('Enabling Inpage Provider')
         const addr = (await window.ethereum.enable())[0]
         updateAddr('self', addr)
-        console.info('%cADDR', 'color: purple', addr)
+        log('Wallet Address', addr)
       },
-      if: () => !addrs.self.val,
+      if: () => !addrs.self,
     },
     {
-      name: 'Load Network-Appropriate Settings',
-      func: () => {
-        netSet()
-        const revAddr = addrs.self.val.substr(2) + '.addr.reverse'
-        updateAddr('rev', revAddr)
-      },
-      if: () => !!addrs.self.val && !addrs.net.val,
-    },
-    {
-      name: 'Get Addresses & Create Registrar',
+      name: 'Load Addresses',
       func: async () => {
-        const ens = new web3.eth.Contract(ensAbi, addrs.ens.val)
+        const log = logger('color: orange; background-color: purple')
+
+        log('Setting addrs.net')
+        netSet()
+
+        log('Adding Reverse Address')
+        updateAddr('rev', addrs.self.substr(2) + '.addr.reverse')
+      },
+      if: () => !!addrs.self && !addrs.net,
+    },
+    {
+      name: 'Load Contracts',
+      func: async () => {
+        const log = logger('color: lightgray; background-color: black')
+
+        const ens = new web3.eth.Contract(ensAbi, addrs.ens)
+
+        log(`Looking Up Owner of ${tld}`)
         const registrarAddress = await ens.methods.owner(namehash(tld)).call()
         updateAddr('reg', registrarAddress)
+        log('Owner', registrarAddress)
+
+        log('Creating ENS and Regisrtar Contracts')
         const registrar = new web3.eth.Contract(registrarAbi, registrarAddress)
         setTracts(t => ({ ...t, reg: registrar, ens: ens }))
-        //updateAddr('regCon', registrar)
+        log('Contracts Completed', `ens:${ens}`, `reg:${registrar}`)
+
+        log(`Looking Up Owner of addr.reverse`)
+        const reverseRegistarAddr = await ens.methods.owner(namehash('addr.reverse')).call()
+        updateAddr('revReg', reverseRegistarAddr)
+        log('Owner', reverseRegistarAddr)
+
+        const reverseResolverAttr = await ens.methods.resolver(namehash(addrs.rev)).call()
+        const reverseResolver = new web3.eth.Contract(publicResolverAbi, reverseResolverAttr)
+        setTracts(t => ({ ...t, revRes: reverseResolver }))
+        let name = await reverseResolver.methods.name(namehash(addrs.rev)).call()
+        updateAddr('revLook', name)
+
+        log(`Looking Up Owner of ${addrs.rev}`)
+        let owner = await ens.methods.owner(namehash(addrs.rev)).call()
+        updateAddr('revOwn', owner)
+        log('Owner', owner)
+
+        log(`Looking Up Owner of ${name}.${tld}`)
+        owner = await ens.methods.owner(namehash(`${name}.${tld}`)).call()
+        updateAddr('owner', owner)
+        log('Owner', owner)
+
+        const reverseRegistrar = new web3.eth.Contract(reverseRegistrarAbi, reverseRegistarAddr)
+        setTracts(t => ({ ...t, revReg: reverseRegistrar }))
       },
-      if: () => !!addrs.ens.val && !addrs.reg.val
+      if: () => !!addrs.net && !tracts.revRes,
     },
     {
-      name: 'Register A .test Name (28-day Expiry)',
+      name: `Register: ${name}.${tld}`,
       func: async () => {
-        const cert = await tracts.reg.methods.register(web3.utils.sha3(name), addrs.self.val).send({ from: addrs.self.val })
+        if(addrs.owner != addrs.self) {
+          await tracts.reg.methods.register(web3.utils.sha3(name), addrs.self).send({ from: addrs.self })
+          let owner = await tracts.ens.methods.owner(namehash(`${name}.${tld}`)).call()
+          updateAddr('owner', owner)
+        }
       },
-      if: () => !!tracts.reg,
+      if: () => addrs.owner != addrs.self,
     },
     {
       name: 'Set a Resolver for the New Domain',
       func: async () => {
-        const ret = await tracts.ens.methods.setResolver(namehash(`${name}.${tld}`), addrs.resolve.val).send({ from: addrs.self.val })
+        await tracts.ens.methods.setResolver(namehash(`${name}.${tld}`), addrs.resolve).send({ from: addrs.self })
       },
-      if: () => !!tracts.ens && !!addrs.resolve.val,
+      if: () => !!tracts.ens && !!addrs.resolve,
     },
     {
       name: 'Create the Reverse Registrar',
       func: async () => {
-        let owner = await tracts.ens.methods.owner(namehash(addrs.rev.val)).call()
-        const reverseRegistarAddr = await tracts.ens.methods.owner(namehash('addr.reverse')).call()
-        updateAddr('revReg', reverseRegistarAddr)
-        const reverseRegistrar = new web3.eth.Contract(reverseRegistrarAbi, reverseRegistarAddr)
-        setTracts(t => ({ ...t, revReg: reverseRegistrar }))
-        if(owner !== addrs.self.val) {
-          const publicResolver = new web3.eth.Contract(publicResolverAbi, addrs.resolve.val);
-          await reverseRegistrar.methods.claim(addrs.self.val).send({ from: addrs.self.val })
-          owner = await tracts.ens.methods.owner(namehash(addrs.rev.val)).call()
+        //const publicResolver = new web3.eth.Contract(publicResolverAbi, addrs.resolve);
+        if(addrs.revOwn !== addrs.self) {
+          await tracts.revReg.methods.claim(addrs.self).send({ from: addrs.self })
+          const owner = await tracts.ens.methods.owner(namehash(addrs.rev)).call()
+          updateAddr('revOwn', owner)
         }
-        updateAddr('owner', owner)
       },
-      if: () => !!addrs.resolve.val && !tracts.revReg
+      if: () => !!addrs.rev && !!tracts.revReg
     },
     {
       name: 'Set Resolver and Link Reverse Name',
       func: async () => {
-        const addr = await tracts.ens.methods.resolver(namehash(addrs.rev.val)).call()
-        const reverseResolver = new web3.eth.Contract(publicResolverAbi, addr)
-        let myName = await reverseResolver.methods.name(namehash(addrs.rev.val)).call()
-
-        if(myName !== `${name}.${tld}`) {
-          const node = await tracts.revReg.methods.setName(`${name}.${tld}`).send({ from: addrs.self.val })
-          myName = await reverseResolver.methods.name(namehash(addrs.rev.val)).call()
+        if(addrs.revLook !== `${name}.${tld}`) {
+          const node = await tracts.revReg.methods.setName(`${name}.${tld}`).send({ from: addrs.self })
+          const revLook = await tracts.revRes.methods.name(namehash(addrs.rev)).call()
+          updateAddr('revLook', revLook)
         }
-        updateAddr('revLook', myName)
       },
       if: () => !!tracts.ens && !!tracts.revReg
     }
   ]
 
-  const incHandler = (d) => () => {
-    setPos((pos) => {
-      const nxt = pos + d
-      if(handlers[nxt - 1]) handlers[nxt - 1].call()
-      return nxt
-    })
-  }
-
   return (
-    <div id='steps'>
-      <ul id='data'>
-        {Object.values(addrs).map(({ title, val }, i) => (
-          <li key={i}><div>{title}</div><div>{val}</div></li>
-        ))}
-      </ul>
-      <div id='buttons' style={{display: 'flex', flexDirection: 'column'}}>
-        {handlers.map((h, i) => (
-          <button key={i} onClick={h.func} disabled={h.if ? !h.if() : false}>{h.name}</button>
-        ))}
+    <div id=''>
+      <div id='config' style={{display: 'flex'}}>
+        <Input value={name} onChange={evt => setName(evt.target.value)}/>
+        <Input value={tld} onChange={evt => setTLD(evt.target.value)}/>
+      </div>
+      <div id='steps'>
+        <ul id='data'>
+          {Object.entries(titles).map(([key, title], i) => (
+            <li key={i}><div>{title}</div><div>{addrs[key]}</div></li>
+          ))}
+        </ul>
+        <div id='buttons' style={{display: 'flex', flexDirection: 'column'}}>
+          {handlers.map((h, i) => (
+            <button key={i} onClick={h.func} disabled={h.if ? !h.if() : false}>{h.name}</button>
+          ))}
+        </div>
       </div>
     </div>
   )
