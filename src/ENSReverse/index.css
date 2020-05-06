@@ -1,0 +1,18 @@
+button, input {
+  font-size: 14pt;
+  padding: 1em 25%;
+}
+
+#data {
+  position: absolute;
+  background-color: antiquewhite;
+  list-style: none;
+}
+
+#data li:nth-child(2n) {
+  background-color: lightblue;
+}
+
+#config input {
+  max-width: 10em;
+}

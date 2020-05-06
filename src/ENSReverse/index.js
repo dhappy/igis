@@ -100,7 +100,7 @@ export default () => {
   // const ethereum = initProvider({ connectionStream: metamaskStream })
   const onboarding = new MetamaskOnboarding()
   const [name, setName] = useState('dhappy') //useState("Are there /'s Allowed? 🐳")
-  const [tld, setTLD] = useState('test') // eth
+  const [tld, setTLD] = useState('eth') // eth
   const [titles, setTitles] = useState({
     self: 'Your Address',
     net: 'Current Network',
@@ -189,7 +189,6 @@ export default () => {
 
         log('Creating ENS and Regisrtar Contracts')
         const registrar = new web3.eth.Contract(registrarAbi, registrarAddress)
-        setTracts(t => ({ ...t, reg: registrar, ens: ens }))
         log('Contracts Completed', `ens:${ens}`, `reg:${registrar}`)
 
         log(`Looking Up Owner of addr.reverse`)
@@ -197,11 +196,15 @@ export default () => {
         updateAddr('revReg', reverseRegistarAddr)
         log('Owner', reverseRegistarAddr)
 
-        const reverseResolverAttr = await ens.methods.resolver(namehash(addrs.rev)).call()
-        const reverseResolver = new web3.eth.Contract(publicResolverAbi, reverseResolverAttr)
-        setTracts(t => ({ ...t, revRes: reverseResolver }))
-        let name = await reverseResolver.methods.name(namehash(addrs.rev)).call()
-        updateAddr('revLook', name)
+        log(`Creating a Reverse Resolver (${addrs.rev})`)
+        const reverseResolverAddr = await ens.methods.resolver(namehash(addrs.rev)).call()
+        log(reverseResolverAddr) // null
+        const reverseResolver = new web3.eth.Contract(publicResolverAbi, reverseResolverAddr)
+        // log(reverseResolver)
+        // let name = await reverseResolver.methods.name(namehash(addrs.rev)).call()
+        // log(name)
+        // updateAddr('revLook', name)
+        // console.log('Got Reverse Lookup', name)
 
         log(`Looking Up Owner of ${addrs.rev}`)
         let owner = await ens.methods.owner(namehash(addrs.rev)).call()
@@ -213,8 +216,12 @@ export default () => {
         updateAddr('owner', owner)
         log('Owner', owner)
 
+        log('Caching Contracts')
         const reverseRegistrar = new web3.eth.Contract(reverseRegistrarAbi, reverseRegistarAddr)
-        setTracts(t => ({ ...t, revReg: reverseRegistrar }))
+        const tracts = { reg: registrar, ens: ens, revRes: reverseResolver, revReg: reverseRegistrar }
+        console.log(tracts)
+        setTracts(t => Object.assign({}, t, tracts))
+        log('Done')
       },
       if: () => !!addrs.net && !tracts.revRes,
     },
@@ -237,8 +244,9 @@ export default () => {
       if: () => !!tracts.ens && !!addrs.resolve,
     },
     {
-      name: 'Create the Reverse Registrar',
+      name: 'Claim the Reverse Address',
       func: async () => {
+        console.log(tracts)
         //const publicResolver = new web3.eth.Contract(publicResolverAbi, addrs.resolve);
         if(addrs.revOwn !== addrs.self) {
           await tracts.revReg.methods.claim(addrs.self).send({ from: addrs.self })
@@ -246,7 +254,7 @@ export default () => {
           updateAddr('revOwn', owner)
         }
       },
-      if: () => !!addrs.rev && !!tracts.revReg
+      if: () => true || !!addrs.rev && !!tracts.revReg
     },
     {
       name: 'Set Resolver and Link Reverse Name',
