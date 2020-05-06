@@ -200,9 +200,7 @@ export default () => {
         const reverseResolverAddr = await ens.methods.resolver(namehash(addrs.rev)).call()
         log(reverseResolverAddr) // null
         const reverseResolver = new web3.eth.Contract(publicResolverAbi, reverseResolverAddr)
-        // log(reverseResolver)
         // let name = await reverseResolver.methods.name(namehash(addrs.rev)).call()
-        // log(name)
         // updateAddr('revLook', name)
         // console.log('Got Reverse Lookup', name)
 

@@ -16,7 +16,7 @@
     "web3": "^1.2.7"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=4443 HTTPS=true SSL_CRT_FILE=../config/local.dev-ca/server.crt SSL_KEY_FILE=../config/local.dev-ca/server.key react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
