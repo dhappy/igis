@@ -9,6 +9,8 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "antd": "^4.2.0",
+    "node-sass": "^4.14.1",
+    "openpgp": "^4.10.4",
     "post-message-stream": "^3.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -16,7 +18,7 @@
     "web3": "^1.2.7"
   },
   "scripts": {
-    "start": "PORT=4443 HTTPS=true SSL_CRT_FILE=../config/local.dev-ca/server.crt SSL_KEY_FILE=../config/local.dev-ca/server.key react-scripts start",
+    "start": "PORT=4443 HTTPS=true SSL_CRT_FILE=config/local.dev.crt SSL_KEY_FILE=config/local.dev.key react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
