@@ -5,7 +5,7 @@ import Web3 from 'web3'
 // import * as LocalMessageDuplexStream from 'post-message-stream'
 import MetamaskOnboarding from '@metamask/onboarding'
 import './index.css'
-import { Input } from 'antd'
+import { Input, Button } from '@ant-design'
 
 const { ethereum } = window
 const web3 = new Web3(ethereum)
@@ -108,7 +108,7 @@ export default () => {
     ens: 'ENS Address',
     reg: 'Registrar Address',
     revReg: 'Reverse Registrar Address',
-    owner: `${name}.${tld} Owner`,
+    owner: () => `${name}.${tld} Owner`,
     revOwn: `Reverse Lookup Owner`,
     resolve: 'Resolver Address',
     revLook: 'Reverse Lookup',
@@ -183,6 +183,20 @@ export default () => {
         const ens = new web3.eth.Contract(ensAbi, addrs.ens)
 
         log(`Looking Up Owner of ${tld}`)
+        const resolverEthAddress = await ens.methods.owner(namehash('resolver.eth')).call()
+        updateAddr('resEth', resolverEthAddress)
+        log('Owner', registrarAddress)
+
+        const publicResolver = new web3.eth.Contract(publicResolverAbi, resolverEthAddress)
+        let name = await publicResolver.methods.name(namehash(addrs.rev)).call()
+        // updateAddr('revLook', name)
+
+
+        log('Creating ENS and Regisrtar Contracts')
+        const registrar = new web3.eth.Contract(registrarAbi, registrarAddress)
+        log('Contracts Completed', `ens:${ens}`, `reg:${registrar}`)
+
+        log(`Looking Up Owner of ${tld}`)
         const registrarAddress = await ens.methods.owner(namehash(tld)).call()
         updateAddr('reg', registrarAddress)
         log('Owner', registrarAddress)
@@ -245,7 +259,6 @@ export default () => {
       name: 'Claim the Reverse Address',
       func: async () => {
         console.log(tracts)
-        //const publicResolver = new web3.eth.Contract(publicResolverAbi, addrs.resolve);
         if(addrs.revOwn !== addrs.self) {
           await tracts.revReg.methods.claim(addrs.self).send({ from: addrs.self })
           const owner = await tracts.ens.methods.owner(namehash(addrs.rev)).call()
@@ -276,7 +289,7 @@ export default () => {
       <div id='steps'>
         <ul id='data'>
           {Object.entries(titles).map(([key, title], i) => (
-            <li key={i}><div>{title}</div><div>{addrs[key]}</div></li>
+            <li key={i}><div>{title.call ? title.call(this) : title}</div><div>{addrs[key]}</div></li>
           ))}
         </ul>
         <div id='buttons' style={{display: 'flex', flexDirection: 'column'}}>

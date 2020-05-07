@@ -1,11 +1,21 @@
 import React from 'react';
 import './App.css';
-//import ENSReverse from './ENSReverse'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+import 'antd/dist/antd.css'
+import ENSReverse from './ENSReverse'
 //import CheckSig from './CheckSig'
 import Mailvelope from './Mailvelope'
+import Repo from './Repository'
+import Home from './Home'
+import { IPFSProvider } from './IPFSContext'
 
 export default () => (
-  <div className="App">
-    <Mailvelope/>
-  </div>
+  <IPFSProvider><Router>
+    <div className='app'>
+      <Route path='/ENSReverse' component={ENSReverse}/>
+      <Route path='/Mailvelope' component={Mailvelope}/>
+      <Route path='/r/*' component={Repo}/>
+      <Route path='/' exact={true} component={Home} />
+    </div>
+  </Router></IPFSProvider>
 )
