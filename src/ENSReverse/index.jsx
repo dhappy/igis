@@ -108,7 +108,7 @@ export default () => {
     ens: 'ENS Address',
     reg: 'Registrar Address',
     revReg: 'Reverse Registrar Address',
-    owner: () => `${name}.${tld} Owner`,
+    owner: () => ({ toString: () => `${name}.${tld} Owner` }),
     revOwn: `Reverse Lookup Owner`,
     resolve: 'Resolver Address',
     revLook: 'Reverse Lookup',
@@ -182,58 +182,90 @@ export default () => {
 
         const ens = new web3.eth.Contract(ensAbi, addrs.ens)
 
-        log(`Looking Up Owner of ${tld}`)
+        log('Looking Up Owner of resolver.eth')
         const resolverEthAddress = await ens.methods.owner(namehash('resolver.eth')).call()
-        updateAddr('resEth', resolverEthAddress)
-        log('Owner', registrarAddress)
+        updateAddr('resEth')
+        log('Owner', resolverEthAddress)
 
         const publicResolver = new web3.eth.Contract(publicResolverAbi, resolverEthAddress)
         let name = await publicResolver.methods.name(namehash(addrs.rev)).call()
+        log('name', name, addrs.rev)
         // updateAddr('revLook', name)
 
+        // log(`Looking Up Owner of ${tld}`)
+        // const registrarAddress = await ens.methods.owner(namehash(tld)).call()
+        // updateAddr('reg', registrarAddress)
+        // log('Owner', registrarAddress)
+  
+        // log('Creating ENS and Regisrtar Contracts')
+        // const registrar = new web3.eth.Contract(registrarAbi, registrarAddress)
+        // log('Contracts Completed', `ens:${ens}`, `reg:${registrar}`)
+  
+        // log(`Looking Up Owner of addr.reverse`)
+        // const reverseRegistarAddr = await ens.methods.owner(namehash('addr.reverse')).call()
+        // updateAddr('revReg', reverseRegistarAddr)
+        // log('Owner', reverseRegistarAddr)
+  
+        // log(`Creating a Reverse Resolver (${addrs.rev})`)
+        // const reverseResolverAddr = await ens.methods.resolver(namehash(addrs.rev)).call()
+        // log(reverseResolverAddr) // null
+        // const reverseResolver = new web3.eth.Contract(publicResolverAbi, reverseResolverAddr)
+        // // let name = await reverseResolver.methods.name(namehash(addrs.rev)).call()
+        // // updateAddr('revLook', name)
+        // // console.log('Got Reverse Lookup', name)
+  
+        // log(`Looking Up Owner of ${addrs.rev}`)
+        // let owner = await ens.methods.owner(namehash(addrs.rev)).call()
+        // updateAddr('revOwn', owner)
+        // log('Owner', owner)
+  
+        // log(`Looking Up Owner of ${name}.${tld}`)
+        // owner = await ens.methods.owner(namehash(`${name}.${tld}`)).call()
+        // updateAddr('owner', owner)
+        // log('Owner', owner)
+  
+        // log('Creating ENS and Regisrtar Contracts')
+        // const registrar = new web3.eth.Contract(registrarAbi, registrarAddress)
+        // log('Contracts Completed', `ens:${ens}`, `reg:${registrar}`)
 
-        log('Creating ENS and Regisrtar Contracts')
-        const registrar = new web3.eth.Contract(registrarAbi, registrarAddress)
-        log('Contracts Completed', `ens:${ens}`, `reg:${registrar}`)
+        // log(`Looking Up Owner of ${tld}`)
+        // const registrarAddress = await ens.methods.owner(namehash(tld)).call()
+        // updateAddr('reg', registrarAddress)
+        // log('Owner', registrarAddress)
 
-        log(`Looking Up Owner of ${tld}`)
-        const registrarAddress = await ens.methods.owner(namehash(tld)).call()
-        updateAddr('reg', registrarAddress)
-        log('Owner', registrarAddress)
+        // log('Creating ENS and Regisrtar Contracts')
+        // const registrar = new web3.eth.Contract(registrarAbi, registrarAddress)
+        // log('Contracts Completed', `ens:${ens}`, `reg:${registrar}`)
 
-        log('Creating ENS and Regisrtar Contracts')
-        const registrar = new web3.eth.Contract(registrarAbi, registrarAddress)
-        log('Contracts Completed', `ens:${ens}`, `reg:${registrar}`)
+        // log(`Looking Up Owner of addr.reverse`)
+        // const reverseRegistarAddr = await ens.methods.owner(namehash('addr.reverse')).call()
+        // updateAddr('revReg', reverseRegistarAddr)
+        // log('Owner', reverseRegistarAddr)
 
-        log(`Looking Up Owner of addr.reverse`)
-        const reverseRegistarAddr = await ens.methods.owner(namehash('addr.reverse')).call()
-        updateAddr('revReg', reverseRegistarAddr)
-        log('Owner', reverseRegistarAddr)
+        // log(`Creating a Reverse Resolver (${addrs.rev})`)
+        // const reverseResolverAddr = await ens.methods.resolver(namehash(addrs.rev)).call()
+        // log(reverseResolverAddr) // null
+        // const reverseResolver = new web3.eth.Contract(publicResolverAbi, reverseResolverAddr)
+        // // let name = await reverseResolver.methods.name(namehash(addrs.rev)).call()
+        // // updateAddr('revLook', name)
+        // // console.log('Got Reverse Lookup', name)
 
-        log(`Creating a Reverse Resolver (${addrs.rev})`)
-        const reverseResolverAddr = await ens.methods.resolver(namehash(addrs.rev)).call()
-        log(reverseResolverAddr) // null
-        const reverseResolver = new web3.eth.Contract(publicResolverAbi, reverseResolverAddr)
-        // let name = await reverseResolver.methods.name(namehash(addrs.rev)).call()
-        // updateAddr('revLook', name)
-        // console.log('Got Reverse Lookup', name)
+        // log(`Looking Up Owner of ${addrs.rev}`)
+        // let owner = await ens.methods.owner(namehash(addrs.rev)).call()
+        // updateAddr('revOwn', owner)
+        // log('Owner', owner)
 
-        log(`Looking Up Owner of ${addrs.rev}`)
-        let owner = await ens.methods.owner(namehash(addrs.rev)).call()
-        updateAddr('revOwn', owner)
-        log('Owner', owner)
+        // log(`Looking Up Owner of ${name}.${tld}`)
+        // owner = await ens.methods.owner(namehash(`${name}.${tld}`)).call()
+        // updateAddr('owner', owner)
+        // log('Owner', owner)
 
-        log(`Looking Up Owner of ${name}.${tld}`)
-        owner = await ens.methods.owner(namehash(`${name}.${tld}`)).call()
-        updateAddr('owner', owner)
-        log('Owner', owner)
-
-        log('Caching Contracts')
-        const reverseRegistrar = new web3.eth.Contract(reverseRegistrarAbi, reverseRegistarAddr)
-        const tracts = { reg: registrar, ens: ens, revRes: reverseResolver, revReg: reverseRegistrar }
-        console.log(tracts)
-        setTracts(t => Object.assign({}, t, tracts))
-        log('Done')
+        // log('Caching Contracts')
+        // const reverseRegistrar = new web3.eth.Contract(reverseRegistrarAbi, reverseRegistarAddr)
+        // const tracts = { reg: registrar, ens: ens, revRes: reverseResolver, revReg: reverseRegistrar }
+        // console.log(tracts)
+        // setTracts(t => Object.assign({}, t, tracts))
+        // log('Done')
       },
       if: () => !!addrs.net && !tracts.revRes,
     },
