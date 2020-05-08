@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^7.1.2",
     "ant-design": "^1.0.0",
     "antd": "^4.2.0",
+    "babel-plugin-import": "^1.13.0",
     "customize-cra": "^0.9.1",
     "ipfs": "^0.43.3",
     "ipfs-http-client": "^44.0.3",
@@ -28,9 +29,9 @@
     "web3": "^1.2.7"
   },
   "scripts": {
-    "start": "PORT=4443 HTTPS=true SSL_CRT_FILE=config/local.dev.crt SSL_KEY_FILE=config/local.dev.key react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "PORT=4443 HTTPS=true SSL_CRT_FILE=config/local.dev.crt SSL_KEY_FILE=config/local.dev.key react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

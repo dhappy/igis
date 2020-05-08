@@ -5,7 +5,7 @@ import Web3 from 'web3'
 // import * as LocalMessageDuplexStream from 'post-message-stream'
 import MetamaskOnboarding from '@metamask/onboarding'
 import './index.css'
-import { Input, Button } from '@ant-design'
+import { Input, Button } from 'antd'
 
 const { ethereum } = window
 const web3 = new Web3(ethereum)
