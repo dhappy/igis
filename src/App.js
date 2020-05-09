@@ -7,6 +7,7 @@ import ENSReverse from './ENSReverse'
 import Mailvelope from './Mailvelope'
 import Repo from './Repository'
 import Home from './Home'
+import SSLHostCheck from './SSLHostCheck'
 import { IPFSProvider } from './IPFSContext'
 
 export default () => (
@@ -14,6 +15,7 @@ export default () => (
     <div className='app'>
       <Route path='/ENSReverse' component={ENSReverse}/>
       <Route path='/Mailvelope' component={Mailvelope}/>
+      <Route path='/SSLHostCheck' component={SSLHostCheck}/>
       <Route path='/r/*' component={Repo}/>
       <Route path='/' exact={true} component={Home} />
     </div>

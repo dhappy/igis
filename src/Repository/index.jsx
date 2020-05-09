@@ -20,7 +20,7 @@ export default () => {
   const [list, setList] = useState([])
   const [readme, setReadMe] = useState()
 
-  const updateList = (newList) => {
+  const updateList = async (newList) => {
     setList(newList)
     console.log('LIST', newList)
 
@@ -28,9 +28,10 @@ export default () => {
       console.log(file.name, /readme(\..+)?/i.test(file.name))
       return /readme(\..+)?/i.test(file.name)
     })
-    console.log(readme, readme.cid)
-    toBuffer(ipfs.cat(readme.cid))
-    .then(buffer => { console.log('buff', buffer); setReadMe(buffer.toString()) })
+    console.log(readme, readme.cid, ipfs.cat(readme.cid), (await toBuffer(ipfs.cat(readme.cid))).toString())
+    const txt = await toBuffer(ipfs.cat(readme.cid))
+    console.log('buff', txt)
+    setReadMe(txt.toString())
   }
 
   useEffect(() => {
