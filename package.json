@@ -2,6 +2,7 @@
   "name": "igis",
   "version": "0.1.0",
   "dependencies": {
+    "@iota/mam.js": "^1.0.0-beta.6",
     "@metamask/inpage-provider": "^5.0.0",
     "@metamask/onboarding": "^0.2.1",
     "@testing-library/jest-dom": "^4.2.4",
@@ -28,8 +29,8 @@
     "web3": "^1.2.7"
   },
   "scripts": {
-    "start": "PORT=4443 HTTPS=true SSL_CRT_FILE=config/local.dev.crt SSL_KEY_FILE=config/local.dev.key react-app-rewired start",
-    "origstart": "react-scripts start",
+    "https": "PORT=4443 HTTPS=true SSL_CRT_FILE=config/local.dev.crt SSL_KEY_FILE=config/local.dev.key react-app-rewired start",
+    "start": "react-scripts start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
