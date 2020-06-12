@@ -72,7 +72,7 @@ export default () => {
   }, [mailvelope, keyring])
 
   return <div>
-    { mailvelope ? 'OK' : <h1><a href='//mailvelope.com'>Install Mailvelope</a></h1>}
+    { mailvelope ? 'OK' : <h1><a href='//mailvelope.com'>Install Mailvelope</a> or add this site to trusted hosts</h1>}
     <div id='settings'></div>
     <div id='keygen'></div>
     <div id='editor'></div>

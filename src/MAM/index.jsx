@@ -3,23 +3,7 @@ import { channelRoot, createChannel, createMessage, parseMessage, mamAttach, mam
 import { composeAPI } from '@iota/core'
 import { asciiToTrytes, trytesToAscii } from '@iota/converter'
 import { Button, Input } from 'antd'
-import { scryRenderedDOMComponentsWithTag } from 'react-dom/test-utils'
-
-const genSeed = (length = 81) => {
-  var chars        = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9'; // The allowed characters in the seed.
-  var randomValues = new Uint32Array(length);       // An empty array to store the random values.
-  var result       = new Array(length);             // An empty array to store the seed characters.
-
-  window.crypto.getRandomValues(randomValues);      // Generate random values and store them to array.
-
-  var cursor = 0;                                   // A cursor is introduced to remove modulus bias.
-  for (var i = 0; i < randomValues.length; i++) {   // Loop through each of the 81 random values.
-      cursor += randomValues[i];                    // Add them to the cursor.
-      result[i] = chars[cursor % chars.length];     // Assign a new character to the seed based on cursor mod 81.
-  }
-
-  return result.join('');                           // Merge the array into a single string and return it.
-}
+import { genSeed } from '../util'
 
 export default () => {
   const [seed] = useState(genSeed())
@@ -66,11 +50,12 @@ export default () => {
     const fetched = await mamFetch(api, root, mode)
     console.log(fetched)
 
-    // // If you want to fetch multiple messages from a channel
-    // // you need either its initial root (or start from another root).
-    // const channelState = createChannel(seed, 2, mode, sideKey);
-    // const chunkSize = 4;
-    // const chunk = await mamFetchAll(api, channelState.initialRoot, mode, sideKey, chunkSize);
+    // If you want to fetch multiple messages from a channel
+    // you need either its initial root (or start from another root).
+    //const channelState = createChannel(seed, 2, mode, sideKey);
+    const chunkSize = 4;
+    const chunk = await mamFetchAll(api, root, mode, undefined, chunkSize);
+    console.log(chunk)
   }
 
   return [

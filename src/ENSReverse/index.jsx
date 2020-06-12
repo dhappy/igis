@@ -321,7 +321,7 @@ export default () => {
       <div id='steps'>
         <ul id='data'>
           {Object.entries(titles).map(([key, title], i) => (
-            <li key={i}><div>{title.call ? title.call(this) : title}</div><div>{addrs[key]}</div></li>
+            <li key={i}><div>{title.call ? title.call(this).toString() : title}</div><div>{addrs[key]}</div></li>
           ))}
         </ul>
         <div id='buttons' style={{display: 'flex', flexDirection: 'column'}}>

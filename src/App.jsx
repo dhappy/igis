@@ -10,6 +10,9 @@ import Home from './Home'
 import SSLHostCheck from './SSLHostCheck'
 import TreeDiff from './TreeDiff'
 import MAM from './MAM'
+import ETHSig from './ETHSig'
+import AvionDB from './AvionDB'
+import Ed25519 from './Ed25519'
 import { IPFSProvider } from './IPFSContext'
 
 export default () => (
@@ -20,6 +23,9 @@ export default () => (
       <Route path='/SSLHostCheck' component={SSLHostCheck}/>
       <Route path='/Diff' component={TreeDiff}/>
       <Route path='/MAM' component={MAM}/>
+      <Route path='/ETHSig' component={ETHSig}/>
+      <Route path='/Ed25519' component={Ed25519}/>
+      <Route path='/AvionDB/*' component={AvionDB}/>
       <Route path='/r/*' component={Repo}/>
       <Route path='/' exact={true} component={Home} />
     </div>

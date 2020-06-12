@@ -12,11 +12,8 @@ export default () => {
 
   useEffect(() => {(async () => {
     if(ipfs) {
-      const commit = (await ipfs.dag.get(ref)).value
-      setCommit(commit)
-      const parent = (await ipfs.dag.get(commit.parents[0])).value
-      setParent(parent)
-
+      setCommit((await ipfs.dag.get(ref)).value)
+      setParent((await ipfs.dag.get(commit.parents[0])).value)
     }
   })()}, [ipfs])
   
