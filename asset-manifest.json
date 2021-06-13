@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/static/css/main.25f678fa.chunk.css",
-    "main.js": "/static/js/main.45a2ad8b.chunk.js",
-    "main.js.map": "/static/js/main.45a2ad8b.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.ceb295f5.js",
-    "runtime-main.js.map": "/static/js/runtime-main.ceb295f5.js.map",
-    "static/css/2.dafc00e9.chunk.css": "/static/css/2.dafc00e9.chunk.css",
-    "static/js/2.4254405e.chunk.js": "/static/js/2.4254405e.chunk.js",
-    "static/js/2.4254405e.chunk.js.map": "/static/js/2.4254405e.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.17d65d0fa5f42bd17e0e6aad5dffe336.js": "/precache-manifest.17d65d0fa5f42bd17e0e6aad5dffe336.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/2.dafc00e9.chunk.css.map": "/static/css/2.dafc00e9.chunk.css.map",
-    "static/css/main.25f678fa.chunk.css.map": "/static/css/main.25f678fa.chunk.css.map",
-    "static/js/2.4254405e.chunk.js.LICENSE.txt": "/static/js/2.4254405e.chunk.js.LICENSE.txt"
+    "main.css": "/igis/static/css/main.25f678fa.chunk.css",
+    "main.js": "/igis/static/js/main.2511d733.chunk.js",
+    "main.js.map": "/igis/static/js/main.2511d733.chunk.js.map",
+    "runtime-main.js": "/igis/static/js/runtime-main.41073de7.js",
+    "runtime-main.js.map": "/igis/static/js/runtime-main.41073de7.js.map",
+    "static/css/2.dafc00e9.chunk.css": "/igis/static/css/2.dafc00e9.chunk.css",
+    "static/js/2.3866743e.chunk.js": "/igis/static/js/2.3866743e.chunk.js",
+    "static/js/2.3866743e.chunk.js.map": "/igis/static/js/2.3866743e.chunk.js.map",
+    "index.html": "/igis/index.html",
+    "precache-manifest.387046788952e5b58fbac0146f11355f.js": "/igis/precache-manifest.387046788952e5b58fbac0146f11355f.js",
+    "service-worker.js": "/igis/service-worker.js",
+    "static/css/2.dafc00e9.chunk.css.map": "/igis/static/css/2.dafc00e9.chunk.css.map",
+    "static/css/main.25f678fa.chunk.css.map": "/igis/static/css/main.25f678fa.chunk.css.map",
+    "static/js/2.3866743e.chunk.js.LICENSE.txt": "/igis/static/js/2.3866743e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.ceb295f5.js",
+    "static/js/runtime-main.41073de7.js",
     "static/css/2.dafc00e9.chunk.css",
-    "static/js/2.4254405e.chunk.js",
+    "static/js/2.3866743e.chunk.js",
     "static/css/main.25f678fa.chunk.css",
-    "static/js/main.45a2ad8b.chunk.js"
+    "static/js/main.2511d733.chunk.js"
   ]
 }
