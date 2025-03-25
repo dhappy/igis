@@ -13,6 +13,7 @@ import MAM from './MAM'
 import ETHSig from './ETHSig'
 import AvionDB from './AvionDB'
 import Ed25519 from './Ed25519'
+import Commits from './Commits'
 import { IPFSProvider } from './IPFSContext'
 
 export default () => (
@@ -27,6 +28,7 @@ export default () => (
       <Route path='/Ed25519' component={Ed25519}/>
       <Route path='/AvionDB/*' component={AvionDB}/>
       <Route path='/r/*' component={Repo}/>
+      <Route path='/commits/*' component={Commits}/>
       <Route path='/' exact={true} component={Home} />
     </div>
   </Router></IPFSProvider>

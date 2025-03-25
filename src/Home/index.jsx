@@ -13,6 +13,7 @@ export default () => {
       <li><Link to='Ed25519'>Generate Ed25519 signed <acronym title='Javascript Object Notation Linked Data'>JSON-LD</acronym></Link></li>
       <li><Link to='AvionDB/'>Basic AvionDB functionality</Link></li>
       <li><Link to='r/QmZQRtwXA7qLYgUxF4R2TCAzXNnrpddgHGoTCe2fjxNah2'>Sample repository view</Link></li>
+      <li><Link to='commits/QmQiSCYiT15eULshDdQ5Di6KedxzVVmURQeKP79xnjcYy3'>Sample commit tree</Link></li>
     </ul>
   )
 }

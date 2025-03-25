@@ -16,26 +16,24 @@ const logger = (css) => ((...args) => {
 
 export default () => {
   const [ipfs] = useContext(IPFSContext)
-  const cid = useParams()[0]
+  const [cid, setCID] = useState(useParams()[0])
   const [list, setList] = useState([])
   const [readme, setReadMe] = useState()
 
   const updateList = async (newList) => {
     setList(newList)
-    console.log('LIST', newList)
-
     const readme = newList.find(file => {
       console.log(file.name, /readme(\..+)?/i.test(file.name))
       return /readme(\..+)?/i.test(file.name)
     })
-    console.log(readme, readme.cid, ipfs.cat(readme.cid), (await toBuffer(ipfs.cat(readme.cid))).toString())
-    const txt = await toBuffer(ipfs.cat(readme.cid))
-    console.log('buff', txt)
-    setReadMe(txt.toString())
+    const chunks = []
+    for await (const chunk of ipfs.cat(readme.cid)) {
+      chunks.push(Buffer.from(chunk))
+    }
+    setReadMe(Buffer.concat(chunks).toString())
   }
 
   useEffect(() => {
-    console.log('Called', ipfs, cid)
     if (ipfs) {
       all(ipfs.ls(cid)).then(updateList)
     }
@@ -54,6 +52,7 @@ export default () => {
 
   return (
     <div id='repo'>
+      {cid ? <h1>{cid}</h1> : ''}
       <Table size='large' dataSource={data} columns={columns}
         showHeader={false} pagination={false} onRow={(record, rowIndex) => {
           return {
